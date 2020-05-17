@@ -1,0 +1,193 @@
+/**
+ * FastButtons's CSS
+ *
+ * @see [[MediaWiki:Gadget-fastbuttons.js]]
+ * @see [[MediaWiki:Gadget-fastbuttons.js/core.js]]
+ * @see [[MediaWiki:Gadget-fastbuttons.js/buttonsList.js]]
+ */
+
+#fastb-menu,
+#fastb-submenu {
+	padding: 4px 4px;
+	font-size: 0.75em;
+}
+
+#fastb-menu {
+	margin-bottom: 1px;
+	background-color: #BBCFE3;
+}
+
+#fastb-submenu {
+	line-height: 1.7em;
+	background-color: #F2F2F2;
+	display: none;
+	cursor: default;
+}
+
+#fastb-menu,
+#fastb-submenu {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+}
+
+#fastb-submenu a:hover {
+	color: #008BCE;
+	text-decoration: none;
+}
+
+#fastb-ESR label {
+        padding: 5px !important;
+}
+
+#fastb-ESR-subject {
+	float: left;
+	padding-left: 0.5em;
+}
+
+#fastb-ESR-justification-field {
+	height: 200px;
+	width: 350px;
+}
+
+#fastb-PE-createPE-warning {
+	font-size: smaller;
+	font-family: Tahoma;
+	display: none;
+	color: red;
+}
+
+#fastb-PE-createPE-justification {
+	height: 200px;
+	width: 500px;
+	display: none;
+}
+
+#fastb-maintenance-justification {
+	border: none;
+}
+
+#fastb-maintenance-justification-field {
+	height: 170px;
+	width: 350px;
+}
+
+#fastb-requests-justification {
+	height: 300px;
+	width: 500px;
+}
+
+#fastb-pageInfo {
+	display: none;
+	font-size: 100%;
+}
+
+#fastb-hideButton {
+	font-size: smaller;
+	cursor: pointer;
+}
+
+.fastb-dialog label {
+	display: block;
+	padding: 2px;
+}
+
+.fastb-dialog .fastb-labelInline {
+	display: inline;
+}
+
+.fastb-button {
+	color: white !important;
+	font-family: Tahoma, Geneva, sans-serif;
+	cursor: pointer;
+	margin: 0 0.3em;
+	padding: 0.1em 0.6em;
+	background-color: #005E8D;
+	border: none;
+	border-radius: 0.2em;
+	white-space: nowrap;
+}
+
+.fastb-fillField {
+	border: 1px solid red;
+}
+
+.fastb-missing {
+	color: red;
+	cursor: default;
+}
+
+.fastb-cursorDefault {
+	cursor: default;
+}
+
+.fastb-ok {
+	color: green;
+	cursor: default;
+}
+
+.fastb-green {
+	color: green;
+}
+
+.fastb-red {
+	color: red;
+}
+
+.fastb-gray {
+	color: gray;
+}
+
+.fastb-help {
+	cursor: help;
+}
+
+.fastb-menu-open {
+	background: #038D64;
+}
+
+.fastb-button:hover {
+	background-color: #BBCFE3;
+	text-decoration: none;
+}
+
+.fastb-menu-button:hover {
+	background-color: #038D64;
+}
+
+.fastb-menu-button:active {
+	background-color: #026446;
+}
+
+.fastb-action-button:hover {
+	background-color: #B60000;
+}
+
+.fastb-action-button:active {
+	background-color: #910000;
+}
+
+.fastb-link-button:hover {
+	background-color: #BFBFBF;
+	color: black !important;
+}
+
+.fastb-open:hover {
+	background-color: #008BCE;
+}
+
+.fastb-link-button:active {
+	background-color: #AEAEAE !important;
+}
+
+.fastb-disabled-button,
+.fastb-disabled-button:active,
+.fastb-disabled-button:focus,
+.fastb-disabled-button:hover {
+	cursor: default;
+	background-color: #DDD !important;
+	color: gray !important;
+	border-color: #AAA;
+	text-decoration: none;
+}
