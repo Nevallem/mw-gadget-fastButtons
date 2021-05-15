@@ -1,8 +1,8 @@
 /*!
  * FastButtons Core
  *
- * @author [[es:User:Racso]] (versão original do script, na Wikipédia em espanhol)
- * @author [[en:User:Macy]] (versão adaptada para a Wikipédia inglesa)
+ * @author [[es:User:Racso]] (versÃ£o original do script, na WikipÃ©dia em espanhol)
+ * @author [[en:User:Macy]] (versÃ£o adaptada para a WikipÃ©dia inglesa)
  * @author [[pt:User:Danilo.mac]]
  * @author Helder (https://github.com/he7d3r)
  * @author [[pt:User:!Silent]]
@@ -14,10 +14,20 @@
  * @help [[WP:Scripts/FastButtons]]
  */
 /* jshint laxbreak: true, unused: true, newcap: false */
-/* global mediaWiki, jQuery, wikEd, WikEdUpdateFrame, WikEdUpdateTextarea */
+/* global mw, $, jQuery, wikEd, WikEdUpdateFrame, WikEdUpdateTextarea */
 
-( function ( mw, $, window ) {
+( function () {
 'use strict';
+
+
+var localStorageAvailable = ( function () {
+	try {
+		return window.localStorage;
+	} catch ( e ) {}
+}() );
+
+if ( !localStorageAvailable )
+	return;
 
 var fastb,
 	api = new mw.Api();
@@ -30,7 +40,7 @@ function FastButtons() {
 	 * Timestamp of the current version
 	 * @property {string}
 	 */
-	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2020-05-13 11:56:53 (UTC)' /*}}.*/;
+	this.version = /*{{subst:AutossubstituiÃ§Ã£o/Estampa com data e hora|js|.*/ '2021-05-02 09:57:26 (UTC)' /*}}.*/;
 
 	/**
 	 * List of buttons
@@ -71,7 +81,7 @@ FastButtons.prototype = {
 	editPage: function ( info ) {
 		var apiDeferred = $.Deferred(),
 			edit = function ( value ) {
-				if ( $.isFunction( info.text ) ) {
+				if ( typeof info.text === 'function' ) {
 					info.text = info.text( value );
 				}
 
@@ -101,7 +111,7 @@ FastButtons.prototype = {
 
 		// If "info.text" is set and is a function, gets the page content first
 		// Set "info.getText" if you need get the content of another page other than "info.title"
-		if ( typeof info.getText === 'string' || $.isFunction( info.text ) ) {
+		if ( typeof info.getText === 'string' || typeof info.text === 'function' ) {
 			fastb.notify( fastb.message( 'fastb-notify-getPageContent' ) );
 			api.getCurrentPageText( info.getText || info.title ).done( function ( value ) {
 				edit( value );
@@ -216,7 +226,7 @@ FastButtons.prototype = {
 		for ( i = 0; i < list.length; i++ ) {
 			item = list[ i ];
 
-			if ( $.isFunction( item ) ) {
+			if ( typeof item === 'function' ) {
 				item();
 			} else if ( ( typeof item === 'string' ) || ( item instanceof jQuery ) ) {
 				fastb.$submenu.append( item );
@@ -246,7 +256,7 @@ FastButtons.prototype = {
 
 	/**
 	 * Edit function
-	 * @param {string} code A template name, possibly preceded by "subst:" and optionally followed by "|" and some parameter(s), ex: "não remova"or "subst:ER|5" or "subst:ESR-matrad|1=\~\~\~~|língua='"
+	 * @param {string} code A template name, possibly preceded by "subst:" and optionally followed by "|" and some parameter(s), ex: "nÃ£o remova"or "subst:ER|A4" or "subst:ESR-matrad|1=\~\~\~~|lÃ­ngua='"
 	 * @param {string|null} [extraText] Extra text for templates and redirects
 	 * @param {string} [sum] Summary of edit
 	 * @param {boolean} [warn] If a warning is sent
@@ -363,7 +373,7 @@ FastButtons.prototype.addButton = function ( $target, buttons ) {
 						}
 					},
 					promptCallback = function ( comment ) {
-						if ( $.isFunction( btn.action ) ) {
+						if ( typeof btn.action === 'function' ) {
 							btn.action();
 						} else {
 							fastb.run( btn.action, comment, btn.sum, btn.warn, btn.templatename );
@@ -378,10 +388,10 @@ FastButtons.prototype.addButton = function ( $target, buttons ) {
 
 				if ( fastb.$submenu.text().indexOf( fastb.message( 'fastb-loading' ) ) === -1
 					&& typeof btn.action !== 'string'
-					&& btn.text === 'Mover' && fastb.textButton === 'Mover a página' || ( fastb.textButton === btn.text
-						&& $.inArray( fastb.textButton, [ 'Não assinou', 'Semirrápida', 'Consenso', 'Mover a página', 'Informações', 'Fusão' ] ) === -1
-					) || ( btn.text === 'Eliminação'
-						&& $.inArray( fastb.textButton, [ 'Semirrápida', 'Consenso' ] ) !== -1
+					&& btn.text === 'Mover' && fastb.textButton === 'Mover a pÃ¡gina' || ( fastb.textButton === btn.text
+						&& $.inArray( fastb.textButton, [ 'NÃ£o assinou', 'SemirrÃ¡pida', 'Consenso', 'Mover a pÃ¡gina', 'InformaÃ§Ãµes', 'FusÃ£o' ] ) === -1
+					) || ( btn.text === 'EliminaÃ§Ã£o'
+						&& $.inArray( fastb.textButton, [ 'SemirrÃ¡pida', 'Consenso' ] ) !== -1
 					)
 				) {
 					fastb.textButton = '';
@@ -389,20 +399,20 @@ FastButtons.prototype.addButton = function ( $target, buttons ) {
 					return;
 				}
 
-				if ( fastb.infoLoaded && fastb.textButton === btn.text && btn.text !== 'Mover a página' ) {
+				if ( fastb.infoLoaded && fastb.textButton === btn.text && btn.text !== 'Mover a pÃ¡gina' ) {
 					fastb.infoLoaded = false;
 					fastb.$submenu.empty().hide();
 					return;
 				}
 
-				if ( !fastb.editPermission && $.inArray( btn.text, [ 'Eliminação', 'Manutenção', '#R', 'Esboço', 'Aviso', 'Não assinou' ] ) !== -1 ) {
+				if ( !fastb.editPermission && $.inArray( btn.text, [ 'EliminaÃ§Ã£o', 'ManutenÃ§Ã£o', '#R', 'EsboÃ§o', 'Aviso', 'NÃ£o assinou' ] ) !== -1 ) {
 					fastb.textButton = btn.text;
 					fastb.changeSubmenu( fastb.message( 'fastb-page-noEditPermission' ) );
 					return;
 				}
 
 				if ( fastb.$submenu.html() !== ''
-					&& ( typeof btn.action === 'string' && $.inArray( btn.text, [ 'Não assinou', 'Eliminação', '#R', 'ER1' ] ) !== -1 )
+					&& ( typeof btn.action === 'string' && $.inArray( btn.text, [ 'NÃ£o assinou', 'EliminaÃ§Ã£o', '#R', 'ER1' ] ) !== -1 )
 				) {
 					fastb.$submenu.empty().hide();
 				}
@@ -417,11 +427,11 @@ FastButtons.prototype.addButton = function ( $target, buttons ) {
 					buttonAction();
 				}
 
-				if ( $.isFunction( btn.action ) ) {
+				if ( typeof btn.action === 'function' ) {
 					fastb.textButton = btn.text;
 				}
 
-				if ( $.isFunction( btn.action ) && $.inArray( btn.text, [ 'Semirrápida', 'Consenso', 'Não assinou'  ] ) === -1 ) {
+				if ( typeof btn.action === 'function' && $.inArray( btn.text, [ 'SemirrÃ¡pida', 'Consenso', 'NÃ£o assinou'  ] ) === -1 ) {
 					$( this ).addClass( 'fastb-menu-open' );
 				}
 			};
@@ -450,7 +460,7 @@ FastButtons.prototype.addButton = function ( $target, buttons ) {
 			props.click = doNothing;
 			props.title = '';
 		} else {
-			props.class += 'fastb-' + ( button.type || ( $.isFunction( button.action ) || button.action === 'request' ? 'menu' : 'action' ) ) + '-button';
+			props.class += 'fastb-' + ( button.type || ( typeof button.action === 'function' || button.action === 'request' ? 'menu' : 'action' ) ) + '-button';
 			props.click = ( button.action === 'request' ) ? fastb.openPrompt.bind( fastb, 'requests', button ) : buttonClick( button );
 		}
 
@@ -485,7 +495,7 @@ FastButtons.prototype.callAPI = function ( code, extra, noCallback ) {
 	}
 
 	if ( code === 'esb' ) {
-		requestParams.apprefix = 'Esboço-' + $( '#fastb-esb-input' ).val();
+		requestParams.apprefix = 'EsboÃ§o-' + $( '#fastb-esb-input' ).val();
 	} else if ( $.inArray( code, [ 'MR', 'PN', 'PV', 'SCORES', 'ER' ] ) !== -1 ) {
 		fastb.changeSubmenu( fastb.message( 'fastb-loading' ) );
 	}
@@ -549,8 +559,8 @@ FastButtons.prototype.sendWarning = function ( type /*[, extraArg[, extraArg2[, 
 		warn = new fastb.Warn( type ),
 		apiDeferred = $.Deferred();
 
-	warn.open.apply( undefined, Array.prototype.slice.call( arguments, 1 ) ).done( function ( userAwnser ) {
-		if ( !userAwnser && type === 'elimination' ) {
+	warn.open.apply( undefined, Array.prototype.slice.call( arguments, 1 ) ).done( function ( userAnswer ) {
+		if ( !userAnswer && type === 'elimination' ) {
 			apiDeferred.resolve( 'notSent' );
 			return;
 		}
@@ -587,7 +597,7 @@ FastButtons.prototype.sendWarning = function ( type /*[, extraArg[, extraArg2[, 
  */
 FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, value, warn, templateName ) {
 	var fbSummary, esbPlacement, valueToLower,
-		appendBelowDesambig = /(\{\{(dablink|distinguir|hatnote|(mini|ver )?desambig|não confundir|nota\:|outrosusos|redirect|rellink).+\}\}[\n]*)+/gi,
+		appendBelowDesambig = /(\{\{(dablink|distinguir|hatnote|(mini|ver )?desambig(?!-)|nÃ£o confundir|nota\:|outrosusos|redirect|rellink).+\}\}[\n]*)+/gi,
 		apiDeferred = $.Deferred(),
 		editCallback = function ( e ) {
 			if ( fastb.isEditPage ) {
@@ -596,7 +606,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 
 			if ( code === 'subst:apagar' || ( code.search( 'av(iso)?-' ) === -1
 				&& /(ES?R)/.test( code )
-				&& !/ER(\|(1\b|7|8|9|12|18|C1|D1|D2|R1|G1))/i.test( code )
+				&& !/ER(\|(C1|D1|D2|R1|R2|G1|P1))/i.test( code )
 			) ) {
 				if ( code !== 'subst:apagar' && code.indexOf( 'ESR' ) === -1 ) {
 					fastb.Warn.queue++;
@@ -607,7 +617,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 			} else if ( warn ) {
 				fastb.Warn.queue++;
 				fastb.sendWarning( 'maintenanceTags', code );
-			} else if ( code === 'Em manutenção' ) {
+			} else if ( code === 'Em manutenÃ§Ã£o' ) {
 				fastb.Warn.queue++;
 				fastb.openPrompt( 'maintenance' );
 			} else if ( !fastb.Warn.queue ) {
@@ -619,12 +629,12 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 	valueToLower = value.toLowerCase();
 
 	// Prevents same tag
-	if ( valueToLower.indexOf( '\{\{esboço' ) !== -1 && code.indexOf( 'Esboço' ) !== -1
+	if ( valueToLower.indexOf( '\{\{esboÃ§o' ) !== -1 && code.indexOf( 'EsboÃ§o' ) !== -1
 		|| valueToLower.indexOf( '{{' + ( templateName && templateName.toLowerCase() ) ) !== -1
 	) {
 		fastb.dialog( {
 			title: fastb.message( 'fastb-warning' ),
-			content: code.indexOf( 'Esboço' ) === -1
+			content: code.indexOf( 'EsboÃ§o' ) === -1
 				? fastb.message( 'fastb-alreadyExistsThisTag', templateName || code )
 				: fastb.message( 'fastb-alreadyExistsThisStub' )
 		} );
@@ -634,7 +644,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 
 	// Prevents over one elimination tag
 	if ( code.search( /(ES?R|apagar)/g ) !== -1
-		&& /\{\{(subst:)?(?:ER|ESR(2?|-banda|-bio|-empresa|-bsre|-organização|-matrad)|apagar|usuário(\(a\))?\:salebot\/impróprio)[\|\}]/i.test( valueToLower )
+		&& /\{\{(subst:)?(?:ER|ESR(2?|-banda|-bio|-empresa|-bsre|-organizaÃ§Ã£o|-matrad)|apagar|usuÃ¡rio(\(a\))?\:salebot\/imprÃ³prio)[\|\}]/i.test( valueToLower )
 		&& fastb.nsNum !== 3
 	) {
 		fastb.dialog( {
@@ -664,22 +674,15 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 		fbSummary = fastb.message( 'fastb-summary-redirect', extraText[ 0 ].replace( /_/g, ' ' ), ( ( extraText[ 1 ] !== '' ) ? ' (' + extraText[ 1 ] + ')' : '' ) );
 	} else {
 		if ( code === 'Global' ) {
-			if ( extraText === '1' ) {
-				extraText = '/Lusofonia';
-			} else if ( extraText === '2') {
-				extraText = '/Brasil';
-			} else if ( extraText === '3' ) {
-				extraText = '/Portugal';
-			} else {
-				extraText = '';
-			}
+			extraText = ( { '1': '/Lusofonia', '2': '/Brasil', '3': '/Portugal' } )[ extraText ] || '';
 		} else {
 			extraText = extraText ? '|1=' + extraText : '';
 		}
 
 		switch ( code ) {
-			case 'Renomear página':
+			case 'Renomear pÃ¡gina':
 			case 'Parcial':
+			case 'Uma-fonte':
 				extraText += '|\{\{subst:DATA}}';
 			break;
 
@@ -687,7 +690,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 				extraText += '|2=\~\~\~~';
 			break;
 
-			case 'Candidatura-cabeçalho':
+			case 'Candidatura-cabeÃ§alho':
 				if ( valueToLower.indexOf( '\{\{artigo insuficiente' ) === -1 ) {
 					fastb.dialog( {
 						title: fastb.message( 'fastb-warning' ),
@@ -701,17 +704,17 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 				extraText += ' \~\~\~~|2=\{\{safesubst:#time:j "de" F|+30 days}}';
 			break;
 
-			case 'Eliminação por insuficiência':
-				if ( valueToLower.indexOf( '\{\{candidatura-cabeçalho' ) === -1 ) {
+			case 'EliminaÃ§Ã£o por insuficiÃªncia':
+				if ( valueToLower.indexOf( '\{\{candidatura-cabeÃ§alho' ) === -1 ) {
 					fastb.dialog( {
 						title: fastb.message( 'fastb-warning' ),
-						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Candidatura-cabeçalho' )
+						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Candidatura-cabeÃ§alho' )
 					} );
 
 					return apiDeferred.promise();
 				}
 
-				value = value.replace( /\{\{candidatura-cabeçalho.*}}/gi, '' );
+				value = value.replace( /\{\{candidatura-cabeÃ§alho.*}}/gi, '' );
 				extraText += '|2=\~\~\~~';
 			break;
 		}
@@ -724,11 +727,11 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 			} else if ( code.search( 'Vandalismo repetido' ) !== -1 ) {
 				value = extraText + '\n\n' + value;
 			} else {
-				value += '\n\n' + ( code.search( /(bloqueado|proxy)/ ) !== -1 ? '== Notificação de bloqueio ==\n' : '' ) + extraText + '\n\~\~\~~';
+				value += '\n\n' + ( code.search( /(bloqueado|proxy)/ ) !== -1 ? '== NotificaÃ§Ã£o de bloqueio ==\n' : '' ) + extraText + '\n\~\~\~~';
 			}
 
 			fbSummary = fastb.message( 'fastb-summary-addMessage', code.replace( 'subst:', '' ) );
-		} else if ( code.indexOf( 'Esboço' ) === 0 ) {
+		} else if ( code.indexOf( 'EsboÃ§o' ) === 0 ) {
 			if ( ( esbPlacement = value.search( /\n+\[\[Categ/ ) ) !== -1 ) {
 				value = value.substring( 0, esbPlacement ) + '\n\n' + extraText + value.substring( esbPlacement );
 			} else {
@@ -751,7 +754,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 				fbSummary = fastb.message( 'fastb-summary-ESR' );
 			}
 
-			if ( code.search( /\b(f\-referências|[sm](ais)?[\-\s](fontes|notas)(\-bpv)?)\b/ ) !== -1 ) {
+			if ( code.search( /\b(f\-referÃªncias|[sm](ais)?[\-\s](fontes|notas)(\-bpv)?)\b/ ) !== -1 ) {
 				value = value.replace( /\{\{Sem[\-\s]fontes([\-\s]bpv)?.+\}\n?/gi, '' );
 			}
 
@@ -820,26 +823,15 @@ FastButtons.prototype.init = function () {
 		$( 'h1' ).first().after( fastb.$submenu ).after( fastb.$menu );
 	}
 
-	if ( fastb.pageName !== 'Wikipédia:Página_principal'
+	if ( fastb.pageName !== 'WikipÃ©dia:PÃ¡gina_principal'
 		&& $.inArray( fastb.action, [ 'view', 'edit', 'submit' ] ) !== -1
 	) {
-		if ( $.inArray( fastb.nsNum, [ 2, 3 ] ) !== -1
-			&& fastb.userName === mw.config.get( 'wgUserName' )
-		) {
-			fastb.addButton( {
-				action: 'ER|1',
-				text: 'ER1',
-				title: 'Marcar subpágina do próprio usuário para eliminação',
-				disable: fastb.pageNotExist
-			} );
-		} else {
-			fastb.addButton( {
-				action: fastb.changeSubmenu.bind( fastb, fastb.buttons.elimination ),
-				text: 'Eliminação',
-				title: 'Exibe as opções de eliminação para esta página',
-				disable: fastb.pageNotExist || fastb.nsNum === -1
-			} );
-		}
+		fastb.addButton( {
+			action: fastb.changeSubmenu.bind( fastb, fastb.buttons.elimination ),
+			text: 'EliminaÃ§Ã£o',
+			title: 'Exibe as opÃ§Ãµes de eliminaÃ§Ã£o para esta pÃ¡gina',
+			disable: fastb.pageNotExist || fastb.nsNum === -1
+		} );
 
 		if ( $.inArray( fastb.nsNum, [ 0, 4, 12 ] ) !== -1 ) {
 			fastb.addButton( {
@@ -852,8 +844,8 @@ FastButtons.prototype.init = function () {
 						( $.inArray( fastb.nsNum, [ 4, 12 ] ) !== -1 ) ? [ buttonsLength - 1 ] : undefined
 					);
 				},
-				text: 'Manutenção',
-				title: 'Exibir predefinições para manutenção',
+				text: 'ManutenÃ§Ã£o',
+				title: 'Exibir predefiniÃ§Ãµes para manutenÃ§Ã£o',
 				disable: fastb.pageNotExist
 			} );
 		}
@@ -862,9 +854,9 @@ FastButtons.prototype.init = function () {
 			fastb.addButton( {
 				action: 'redirect',
 				text: '#R',
-				title: 'Redirecionar para outro título',
-				prompt: 'Informe a página e o motivo do redirecionamento',
-				label: 'Página|2=Motivo' + ( ( fastb.nsNum !== 14 ) ? '[optional]' : '' ),
+				title: 'Redirecionar para outro tÃ­tulo',
+				prompt: 'Informe a pÃ¡gina e o motivo do redirecionamento',
+				label: 'PÃ¡gina|2=Motivo' + ( ( fastb.nsNum !== 14 ) ? '[optional]' : '' ),
 				disable: $.inArray( fastb.nsNum, [ 6, 8, 828 ] ) !== -1
 			} );
 		}
@@ -872,19 +864,19 @@ FastButtons.prototype.init = function () {
 		if ( fastb.nsNum === 0 ) {
 			fastb.addButton( [ {
 					action: fastb.changeSubmenu.bind( fastb, [ {
-							action: 'Esboço',
-							text: 'Esboço genérico',
+							action: 'EsboÃ§o',
+							text: 'EsboÃ§o genÃ©rico',
 							title: 'Artigo ainda pouco desenvolvido'
 						},
 						fastb.fieldForStubs
 					] ),
-					text: 'Esboço',
-					title: 'Exibir predefinições para esboços',
+					text: 'EsboÃ§o',
+					title: 'Exibir predefiniÃ§Ãµes para esboÃ§os',
 					disable: fastb.pageNotExist
 				}, {
 					action: fastb.changeSubmenu.bind( fastb, fastb.searchButtons ),
 					text: 'Busca',
-					title: 'Exibir opções para a busca de fontes'
+					title: 'Exibir opÃ§Ãµes para a busca de fontes'
 				}
 			] );
 		}
@@ -893,21 +885,21 @@ FastButtons.prototype.init = function () {
 			fastb.addButton( {
 				action: fastb.changeSubmenu.bind( fastb, fastb.buttons.warn ),
 				text: 'Aviso',
-				title: 'Exibir lista de predefinições para avisos',
+				title: 'Exibir lista de predefiniÃ§Ãµes para avisos',
 				disable: mw.config.get( 'wgUserName' ) === window.unescape( mw.util.getUrl().split( ':' )[ 1 ] )
 			} );
 		} else if ( fastb.nsNum === 10 ) {
 			fastb.addButton( {
 				action: fastb.openPrompt.bind( fastb, 'merging' ),
-				text: 'Fusão',
-				title: 'Página necessita de fusão',
+				text: 'FusÃ£o',
+				title: 'PÃ¡gina necessita de fusÃ£o',
 				disable: fastb.pageNotExist
 			} );
 		} else if ( fastb.nsNum === 14 ) {
 			fastb.addButton( {
 				action: fastb.changeSubmenu.bind( fastb, fastb.petScanButtons ),
 				text: 'PetScan',
-				title: 'Exibir opções do PetScan para procurar páginas nesta categoria',
+				title: 'Exibir opÃ§Ãµes do PetScan para procurar pÃ¡ginas nesta categoria',
 				disable: fastb.pageNotExist
 			} );
 		}
@@ -916,23 +908,23 @@ FastButtons.prototype.init = function () {
 			fastb.addButton( {
 				action: function () {
 					fastb.openPrompt( 'defaultPrompt',
-						'Não assinou',
-						'Quem foi o editor que deixou de assinar?|2=Data do comentário[optional]',
+						'NÃ£o assinou',
+						'Quem foi o editor que deixou de assinar?|2=Data do comentÃ¡rio[optional]',
 						function ( info ) {
 							info = info.split( '|2=' );
 
-							$( '#wpSummary' ).val( ( $( '#wpSummary' ).val() !== '' ? $( '#wpSummary' ).val() + '; ' : '' ) + 'Adicionando a "[[Predefinição:Não assinou]]"' );
+							$( '#wpSummary' ).val( ( $( '#wpSummary' ).val() !== '' ? $( '#wpSummary' ).val() + '; ' : '' ) + 'Adicionando a "[[PredefiniÃ§Ã£o:NÃ£o assinou]]"' );
 							$( '#wpTextbox1' ).textSelection(
 								'encapsulateSelection', {
-									peri: '\{\{subst:Não assinou|' + info[ 0 ] + ( info[ 1 ] !== '' ? '|' + info[ 1 ] : '' ) + '}}'
+									peri: '\{\{subst:NÃ£o assinou|' + info[ 0 ] + ( info[ 1 ] !== '' ? '|' + info[ 1 ] : '' ) + '}}'
 								}
 							);
 						}
 					);
 				},
 				type: 'action',
-				text: 'Não assinou',
-				title: 'Adiciona uma mensagem informando que o editor não assinou a mensagem',
+				text: 'NÃ£o assinou',
+				title: 'Adiciona uma mensagem informando que o editor nÃ£o assinou a mensagem',
 				disable: fastb.pageNotExist
 			} );
 		}
@@ -948,14 +940,14 @@ FastButtons.prototype.init = function () {
 				fastb.addButton( {
 					action: fastb.callAPI.bind( fastb, 'anon' ),
 					text: 'Sobre o IP',
-					title: 'Exibir informações sobre este IP',
+					title: 'Exibir informaÃ§Ãµes sobre este IP',
 					disable: ipAddress.indexOf( '/' ) !== -1
 				} );
 			} else {
 				fastb.addButton( {
 					action: fastb.callAPI.bind( fastb, 'usu' ),
 					text: 'Sobre a conta',
-					title: 'Exibir informações sobre esta conta',
+					title: 'Exibir informaÃ§Ãµes sobre esta conta',
 					disable: mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Contributions'
 						&& !( mw.util.getUrl().split( '/' )[ 3 ] || mw.util.getParamValue( 'target' ) )
 				} );
@@ -982,22 +974,22 @@ FastButtons.prototype.init = function () {
 					}
 				} );
 			},
-			text: 'Informações',
-			title: 'Exibe informações sobre a página',
+			text: 'InformaÃ§Ãµes',
+			title: 'Exibe informaÃ§Ãµes sobre a pÃ¡gina',
 			disable: fastb.nsNum === -1
 		}, {
 			action: fastb.movePage,
 			text: 'Mover',
-			title: 'Exibe as opções para moção da página',
+			title: 'Exibe as opÃ§Ãµes para moÃ§Ã£o da pÃ¡gina',
 			disable: fastb.nsNum === -1 || fastb.pageNotExist
 		}, {
 			action: fastb.changeSubmenu.bind( fastb, fastb.buttons.requests ),
 			text: 'Pedido',
-			title: 'Exibe botões para realização de pedidos referentes a uma página ou usuário',
+			title: 'Exibe botÃµes para realizaÃ§Ã£o de pedidos referentes a uma pÃ¡gina ou usuÃ¡rio',
 		}, {
 			action: fastb.changeSubmenu.bind( fastb, fastb.buttons.list ),
 			text: 'Listar',
-			title: 'Exibe os botões que listam edições nas páginas novas, mudanças recentes, páginas vigiadas e eliminação rápida'
+			title: 'Exibe os botÃµes que listam ediÃ§Ãµes nas pÃ¡ginas novas, mudanÃ§as recentes, pÃ¡ginas vigiadas e eliminaÃ§Ã£o rÃ¡pida'
 		}
 	] );
 
@@ -1008,13 +1000,14 @@ FastButtons.prototype.init = function () {
 	} ).tipsy() );
 
 	$( '#fastb-hideButton' ).click( function () {
+		$( '#ca-fastbHideButton a' ).text( fastb.message( 'fastb-FastButtons' ) + ' (' + fastb.message( 'fastb-showButton' ) + ')' );
 		fastb.$menu.fadeOut( 'slow' );
 		fastb.$submenu.fadeOut( 'slow' );
 		fastb.$pageInfo.fadeOut( 'slow' );
 		localStorage.setItem( 'fastb-hidden', true );
 	} );
 
-	$( '#ca-fastbHideButton' ).off( 'click' ).click( function ( e ) {
+	$( '#ca-fastbHideButton a' ).off( 'click' ).click( function ( e ) {
 		e.preventDefault();
 
 		if ( fastb.$menu.css( 'display' ) !== 'none' ) {
@@ -1026,6 +1019,10 @@ FastButtons.prototype.init = function () {
 			fastb.$menu.fadeIn( 'slow' );
 			localStorage.setItem( 'fastb-hidden', false );
 		}
+
+		$( this ).text(
+			mw.message( 'fastb-FastButtons' ) + ' (' + mw.message( 'fastb-' + ( localStorage.getItem( 'fastb-hidden' ) === 'true' ? 'show' : 'hide' ) + 'Button' ) + ')'
+		);
 	} );
 };
 
@@ -1164,7 +1161,7 @@ $.extend( fastb, {
 		var $stubInput, $okButton,
 			doAction = function () {
 				if ( fastb.forceFill( $stubInput ) ) {
-					fastb.run( 'Esboço-' + $( '#fastb-esb-input' ).val() );
+					fastb.run( 'EsboÃ§o-' + $( '#fastb-esb-input' ).val() );
 				}
 			};
 
@@ -1173,7 +1170,7 @@ $.extend( fastb, {
 				source: function ( request, response ) {
 					fastb.callAPI( 'esb' ).done( function ( data ) {
 						response( $.map( data.query.allpages, function ( item ) {
-							return item.title.replace( /^Predefinição:Esboço-/gi, '' );
+							return item.title.replace( /^PredefiniÃ§Ã£o:EsboÃ§o-/gi, '' );
 						} ) );
 					} );
 				}
@@ -1186,7 +1183,7 @@ $.extend( fastb, {
 
 		$okButton = $( '<input value="OK" type="button" class="fastb-button fastb-action-button" />' ).click( doAction );
 
-		fastb.appendSubmenu( [ ' Esboço-', $stubInput, ' ', $okButton ] );
+		fastb.appendSubmenu( [ ' EsboÃ§o-', $stubInput, ' ', $okButton ] );
 	},
 
 	/**
@@ -1388,7 +1385,7 @@ fastb.ProcessAPI = function ( typeRequest ) {
 
 		ER: {
 			list: 'categorymembers',
-			cmtitle: 'Category:!Páginas_para_eliminação_rápida'
+			cmtitle: 'Category:!PÃ¡ginas_para_eliminaÃ§Ã£o_rÃ¡pida'
 		},
 
 		esb: {
@@ -1399,9 +1396,9 @@ fastb.ProcessAPI = function ( typeRequest ) {
 		usu: {
 			list: 'users',
 			usprop: 'editcount|registration|groups|blockinfo',
-			ususers: fastb.userName,
 			meta: 'globaluserinfo',
 			guiprop: 'groups|unattached',
+			ususers: fastb.userName,
 			guiuser: fastb.userName.replace( /_/g, ' ' ) // user_name like this returns a "missing" error in globaluserinfo data
 		},
 
@@ -1409,8 +1406,8 @@ fastb.ProcessAPI = function ( typeRequest ) {
 			list: 'usercontribs',
 			uclimit: '500',
 			ucprop: 'timestamp',
-			ucuser: fastb.userName,
-			ucdir: 'newer'
+			ucdir: 'newer',
+			ucuser: fastb.userName
 		},
 
 		pageInfo: {
@@ -1434,8 +1431,8 @@ fastb.ProcessAPI = function ( typeRequest ) {
 
 		deletedEdits: {
 			list: 'deletedrevs',
-			titles: fastb.pageName,
-			drlimit: '500'
+			drlimit: '500',
+			titles: fastb.pageName
 		},
 
 		deletionLogs: {
@@ -1446,9 +1443,9 @@ fastb.ProcessAPI = function ( typeRequest ) {
 
 		patrolPage: {
 			action: 'patrol',
+			tags: 'fast-buttons',
 			rcid: mw.util.getParamValue( 'rcid', mw.util.$content.find( 'div.patrollink a' ).prop( 'href' ) ),
-			token: mw.user.tokens.get( 'patrolToken' ),
-			tags: 'fast-buttons'
+			token: mw.user.tokens.get( 'patrolToken' )
 		},
 
 		pageRevisions: {
@@ -1456,9 +1453,15 @@ fastb.ProcessAPI = function ( typeRequest ) {
 			rvprop: 'user|comment|timestamp',
 			rvlimit: '20',
 			rvdir: 'newer',
-			titles: fastb.pageName,
-			format: 'json'
+			titles: fastb.pageName
 		},
+
+		pageEditors: {
+			prop: 'revisions',
+			rvprop: 'user',
+			rvlimit: '500',
+			titles: fastb.pageName
+		}
 	},
 
 	/**
@@ -1492,7 +1495,7 @@ fastb.ProcessAPI = function ( typeRequest ) {
 /**
  * Callback function for the request of recent edits (from watchlist, recent changes or new pages)
  * @param {Object} query API data
- * @param {string} code Code passed through the "fastb.callAPI"
+ * @param {string} code Code passed through "fastb.callAPI"
  * @return {undefined}
  */
 fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
@@ -1512,6 +1515,7 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 					[ '*/', ':' ]
 				]
 			},
+
 			MR: {
 				listName: 'recentchanges',
 				urlParam: 'diff=last',
@@ -1521,6 +1525,7 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 					[ '*/', ':' ]
 				]
 			},
+
 			PN: {
 				listName: 'recentchanges',
 				urlParam: 'redirect=no&rcid=',
@@ -1529,6 +1534,7 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 					[ '[[Ajuda:SEA|?]] ', '' ]
 				]
 			},
+
 			SCORES: {
 				listName: 'recentchanges',
 				urlParam: 'diff=',
@@ -1538,12 +1544,11 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 					[ '*/', ':' ]
 				]
 			},
+
 			ER: {
 				listName: 'categorymembers',
 				noItems: fastb.message( 'fastb-noER' ),
-			},
-
-
+			}
 		},
 		list = query[ info[ code ].listName ],
 		max = ( list.length < 10 ) ? list.length : 10,
@@ -1627,7 +1632,7 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 				}
 
 				bold = ( parseInt( length ) >= 500 || parseInt( length ) <= -500 );
-				comment = comment.replace( /<[^>]+>/g, '' ); // remove html tags
+				comment = comment.replace( /<[^>]+>/g, '' ); // remove HTML tags
 
 				if ( code === 'ER' ) {
 					pages.push( '<a href="' + mw.util.getUrl( titleItem ) + '">' + titleItem + '</a>' );
@@ -1729,7 +1734,7 @@ fastb.ProcessAPI.prototype.backLinks = {
 								: fastb.message( 'fastb-no' ).replace( 'N', 'n' ) + ' '
 							) ),
 						text: key
-					} ), ' · ' );
+					} ), ' Â· ' );
 				}
 			}
 		}
@@ -1782,7 +1787,7 @@ fastb.ProcessAPI.prototype.pageQuality = {
 
 		fastb.callAPI( 'pageInfo' );
 		fastb.$pageInfo.append(
-			' · <span> ' + fastb.message( 'fastb-page-quality' ) + ': <b>'
+			' Â· <span> ' + fastb.message( 'fastb-page-quality' ) + ': <b>'
 				+ $featuredContent.substring( 17, $featuredContent.indexOf( '.' ) )
 			+ '</b></span>'
 		);
@@ -1834,7 +1839,7 @@ fastb.ProcessAPI.prototype.pageQuality = {
 		fastb.$pageInfo.append(
 			' <span>' + fastb.message( 'fastb-page-quality' ) + ': <b>'
 				+ ( quality || fastb.message( 'fastb-page-qualityUnknown' ) )
-			+ '</b></span> · '
+			+ '</b></span> Â· '
 		);
 	}
 };
@@ -1897,26 +1902,27 @@ fastb.ProcessAPI.prototype.userInfo = {
 			// Local groups
 			autoconfirmed: 'Autoconfirmado',
 			autoreviewer: 'Autorrevisor',
-			bot: [ 'Robô', 'Robôs/Pedidos_de_aprovação' ],
+			bot: [ 'RobÃ´', 'RobÃ´s/Pedidos_de_aprovaÃ§Ã£o' ],
 			checkuser: [ 'Verificador de contas', 'CheckUser/Candidaturas' ],
-			bureaucrat: [ 'Burocrata', 'Burocratas/Pedidos de aprovação' ],
+			bureaucrat: [ 'Burocrata', 'Burocratas/Pedidos de aprovaÃ§Ã£o' ],
 			confirmed: 'Confirmado',
-			eliminator: [ 'Eliminador', 'Eliminadores/Pedidos de aprovação' ],
+			eliminator: [ 'Eliminador', 'Eliminadores/Pedidos de aprovaÃ§Ã£o' ],
 			epcoordinator: 'Coordenador de curso',
 			epinstructor: 'Professor de curso',
+			extendedconfirmed: 'Autoconfirmado estendido',
 			'interface-admin': 'Administrador de interface',
 			'ipblock-exempt': 'Isento de bloqueio de IP',
 			patroller: 'Patrulhador',
-			oversight: [ 'Supervisor', 'Supervisão/Candidaturas' ],
+			oversight: [ 'Supervisor', 'SupervisÃ£o/Candidaturas' ],
 			reviewer: 'Revisor',
 			rollbacker: 'Reversor',
-			sysop: [ 'Administrador', 'Administradores/Pedidos de aprovação' ],
+			sysop: [ 'Administrador', 'Administradores/Pedidos de aprovaÃ§Ã£o' ],
 
 			// Global groups
-			'abusefilter-helper': 'Ajudante do filtro de edições',
+			'abusefilter-helper': 'Ajudante do filtro de ediÃ§Ãµes',
 			'apihighlimits-requestor': 'Solicitante de limites mais altos da API',
 			'captcha-exempt': 'Isento de CAPTCHA',
-			'global-bot': 'Robô global',
+			'global-bot': 'RobÃ´ global',
 			'global-deleter': 'Eliminador global',
 			'global-flow-create': 'Criador de flow global',
 			'global-ipblock-exempt': 'Isento de bloqueio de IP global',
@@ -1929,16 +1935,16 @@ fastb.ProcessAPI.prototype.userInfo = {
 			'oathauth-tester': 'Testador do OATHAuth',
 			'otrs-member': 'Membro do OTRS',
 			'recursive-export': 'Exportador recursivo',
-			staff: 'Funcionário da Wikimédia',
+			staff: 'FuncionÃ¡rio da WikimÃ©dia',
 			steward: 'Steward',
 			sysadmin: 'Administrador do sistema',
-			'wmf-ops-monitoring': 'Monitor da operações da WMF',
+			'wmf-ops-monitoring': 'Monitor da operaÃ§Ãµes da WMF',
 			'wmf-researcher': 'Investigador da WMF'
 		};
 
 		$( '#fastb-editInfo' ).html(
 			fastb.message( 'fastb-user-edits' ) + ': <b>'
-			+ ( user.editcount ).toLocaleString() + '</b> — ' + ( ( code === 'anon' )
+			+ ( user.editcount ).toLocaleString() + '</b> â€” ' + ( ( code === 'anon' )
 				? fastb.message( 'fastb-user-anonFirstEdit' )
 				: fastb.message( 'fastb-user-registryDate' )
 			) + ': ' + '<b><span id="fastb-registryDate"></span></b>'
@@ -1967,7 +1973,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 
 			userGroups = userGroups.map( function ( el ) {
 				if ( typeof groupsMap[ el ] === 'object' ) {
-					return '<a href="' + mw.util.getUrl( 'Wikipédia:' + groupsMap[ el ][ 1 ] + '/' + user.name ) + '">' + groupsMap[ el ][ 0 ] + '</a>';
+					return '<a href="' + mw.util.getUrl( 'WikipÃ©dia:' + groupsMap[ el ][ 1 ] + '/' + user.name ) + '">' + groupsMap[ el ][ 0 ] + '</a>';
 				}
 
 				return groupsMap[ el ];
@@ -1981,10 +1987,10 @@ fastb.ProcessAPI.prototype.userInfo = {
 			}
 
 			if ( typeof user.blockid === 'number' ) {
-				$( '#fastb-editInfo' ).prepend( fastb.message( 'fastb-user-blocked' ) + ' — ' );
+				$( '#fastb-editInfo' ).prepend( fastb.message( 'fastb-user-blocked' ) + ' â€” ' );
 			}
 
-			fastb.appendSubmenu( ' — ' + fastb.message( 'fastb-user-groups' ) + ': ' + ( userGroups.join( ' · ' ) || '<span class="fastb-gray">' + fastb.message( 'fastb-none' ).toLowerCase() + '</span>' ) );
+			fastb.appendSubmenu( ' â€” ' + fastb.message( 'fastb-user-groups' ) + ': ' + ( userGroups.join( ' Â· ' ) || '<span class="fastb-gray">' + fastb.message( 'fastb-none' ).toLowerCase() + '</span>' ) );
 		}
 
 		fastb.$submenu.find( 'sup' ).tipsy();
@@ -2061,7 +2067,7 @@ fastb.ProcessAPI.prototype.deletedEdits = function ( query ) {
 			text: numDeletedRevs
 				+ ' ' + fastb.message( 'fastb-page-deletedEdit' + ( $.inArray( numDeletedRevs, [ 1, none ] ) !== -1 ? '' : 's' ) )
 		} ),
-		' · '
+		' Â· '
 	);
 
 	if ( $.inArray( fastb.nsNum, [ 0, 100 ] ) !== -1 ) {
@@ -2092,8 +2098,8 @@ fastb.ProcessAPI.prototype.pageInfo = function ( query, justWatchers ) {
 	text[ text.length ] = '<a href="https://tools.wmflabs.org/pageviews/?project=pt.wikipedia.org&platform=all-access&agent=user&range=latest-20&pages=' + fastb.pageName + '">' + fastb.message( 'fastb-page-pageviews' ) + '</a>';
 	text[ text.length ] = '<a href="' + mw.util.getUrl() + '?action=info">' + fastb.message( 'fastb-page-moreInfo' ) + '</a>';
 
-	if ( fastb.textButton === 'Informações' ) {
-		fastb.$pageInfo.append( text.join( ' · ' ) ).show().html();
+	if ( fastb.textButton === 'InformaÃ§Ãµes' ) {
+		fastb.$pageInfo.append( text.join( ' Â· ' ) ).show().html();
 		fastb.changeSubmenu( fastb.$pageInfo );
 	}
 
@@ -2139,7 +2145,7 @@ fastb.ProcessAPI.prototype.requestDeletion = function ( justVerify ) {
 	var tagName,
 		apiDeferred = $.Deferred();
 
-	api.getCurrentPageText( 'Wikipédia:Páginas para eliminar/' + fastb.pageName ).done( function ( value ) {
+	api.getCurrentPageText( 'WikipÃ©dia:PÃ¡ginas para eliminar/' + fastb.pageName ).done( function ( value ) {
 		if ( justVerify ) {
 			apiDeferred.resolve( !!value );
 			return;
@@ -2149,7 +2155,7 @@ fastb.ProcessAPI.prototype.requestDeletion = function ( justVerify ) {
 			tagName = ( !value ) ? 'span' : 'a';
 			fastb.$pageInfo.append(
 				$( '<' + tagName + ' id="fastb-requestDeletion"></' + tagName + '>' )
-					.html( fastb.message( 'fastb-page-requestDeletion' ) + ' · ' )
+					.html( fastb.message( 'fastb-page-requestDeletion' ) + ' Â· ' )
 					.before( ' ' )
 			);
 		}
@@ -2161,7 +2167,7 @@ fastb.ProcessAPI.prototype.requestDeletion = function ( justVerify ) {
 		} else {
 			$( '#fastb-requestDeletion' ).prop( {
 				title: fastb.message( 'fastb-page-requestDeletionLink' ),
-				href: mw.util.getUrl( 'Wikipédia:Páginas para eliminar/' + fastb.pageName )
+				href: mw.util.getUrl( 'WikipÃ©dia:PÃ¡ginas para eliminar/' + fastb.pageName )
 			} );
 		}
 
@@ -2229,7 +2235,7 @@ fastb.Warn.prototype.elimination = function ( code ) {
 			} else if ( $( '#fastb-send-message' ).val() === '2' ) {
 				this.info = {
 					userName: userPageCreator,
-					template: 'não remova',
+					template: 'nÃ£o remova',
 					summary: fastb.message( 'fastb-warn-elimination-summary-removeEliminationTag' ),
 					isPE: isPE
 				};
@@ -2494,7 +2500,7 @@ fastb.Prompt.prototype.defaultPrompt = function ( title, label, callback ) {
 };
 
 /**
- * ESR ("Eliminação semirrápida") prompt
+ * ESR ("EliminaÃ§Ã£o semirrÃ¡pida") prompt
  * @return {undefined}
  */
 fastb.Prompt.prototype.ESR = function () {
@@ -2513,7 +2519,7 @@ fastb.Prompt.prototype.ESR = function () {
 			if ( fastb.nsNum === 6 ) {
 				templateCode = 'subst:ESR-arquivo|' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
 			} else if ( $( '#fastb-ESR-matrad' ).prop( 'checked' ) ) {
-				templateCode = 'subst:ESR-matrad|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~|língua=' + $( '#fastb-ESR-matrad-language' ).val().toLowerCase();
+				templateCode = 'subst:ESR-matrad|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~|lÃ­ngua=' + $( '#fastb-ESR-matrad-language' ).val().toLowerCase();
 			} else if ( $( '#fastb-ESR-VDA' ).prop( 'checked' ) ) {
 				templateCode = 'subst:ESR-VDA|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
 			} else if ( !!$subjectSelect.val().split( ';' )[ 1 ] ) {
@@ -2638,12 +2644,10 @@ fastb.Prompt.prototype.ESR = function () {
 			$( '#fastb-ESR-subject-select' ).prop( 'disabled', false );
 		}
 	} );
-
-	$( '#fastb-ESR-justification-field' ).placeholder();
 };
 
 /**
- * PE ("Páginas para eliminar") prompt
+ * PE ("PÃ¡ginas para eliminar") prompt
  * @return {undefined}
  */
 fastb.Prompt.prototype.PE = function () {
@@ -2664,8 +2668,8 @@ fastb.Prompt.prototype.PE = function () {
 
 			fastb.notify( fastb.message( 'fastb-notify-creatingEliminationPage' ) );
 			fastb.editPage( {
-				getText: 'Template:Página para eliminar',
-				title: 'Wikipédia:Páginas_para_eliminar/' + fastb.pageName,
+				getText: 'Template:PÃ¡gina para eliminar',
+				title: 'WikipÃ©dia:PÃ¡ginas_para_eliminar/' + fastb.pageName,
 				text: function ( value ) {
 					return value
 						.replace( /<\/?includeonly>/g, '' )
@@ -2686,7 +2690,7 @@ fastb.Prompt.prototype.PE = function () {
 				count = 1;
 			}
 
-			page = 'Wikipédia:Páginas para eliminar/' + fastb.pageName + '/' + count++;
+			page = 'WikipÃ©dia:PÃ¡ginas para eliminar/' + fastb.pageName + '/' + count++;
 
 			api.getCurrentPageText( page ).done( function ( value ) {
 				if ( value === undefined ) {
@@ -2769,12 +2773,10 @@ fastb.Prompt.prototype.PE = function () {
 			$justification.hide( 'fast' ).removeClass( 'fastb-fillField' ).val( '' );
 		}
 	} );
-
-	$( '#fastb-PE-createPE-justification' ).placeholder();
 };
 
 /**
- * Prompt to the tag "Em manutenção"
+ * Prompt to the tag "Em manutenÃ§Ã£o"
  * @return {undefined}
  */
 fastb.Prompt.prototype.maintenance = function () {
@@ -2786,9 +2788,9 @@ fastb.Prompt.prototype.maintenance = function () {
 
 		if ( fastb.forceFill( $justification ) ) {
 			$( this ).dialog( 'close' );
-			fastb.notify( fastb.message( 'fastb-notify-editingSomePage', 'Wikipédia:Páginas precisando de manutenção' ) );
+			fastb.notify( fastb.message( 'fastb-notify-editingSomePage', 'WikipÃ©dia:PÃ¡ginas precisando de manutenÃ§Ã£o' ) );
 			fastb.editPage( {
-				title: 'Wikipédia:Páginas precisando de manutenção',
+				title: 'WikipÃ©dia:PÃ¡ginas precisando de manutenÃ§Ã£o',
 				section: 'new',
 				sectiontitle: '[[' + fastb.pageName.replace( /_/g, ' ' ) + ']]',
 				summary: fastb.message( 'fastb-summary-maintenance', fastb.pageName.replace( /_/g, ' '  ) ),
@@ -2819,7 +2821,7 @@ fastb.Prompt.prototype.maintenance = function () {
  * @return {undefined}
  */
 fastb.Prompt.prototype.requests = function ( data ) {
-	var $justification, $historyPageExtra, $target, callback,
+	var $justification, $historyPageExtra, $target, callback, targetPage,
 		buttons = {},
 		pageName = fastb.pageName.replace( /_/g, ' ' ),
 		isUserPage = mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Contributions' || fastb.nsNum === 2 || fastb.nsNum === 3;
@@ -2831,17 +2833,17 @@ fastb.Prompt.prototype.requests = function ( data ) {
 			value = value.replace( /<\/?includeonly>/g, '' );
 		}
 
-		$target.val( $target.val().replace( /(^\s+|\s+$)/g, '' ) );
+		$target.val( $target.val().trim() );
 
-		if ( data.text === 'Histórico' ) {
+		if ( data.text === 'HistÃ³rico' ) {
 			value = value
-				.replace( 'Página 1', $target.val() )
-				.replace( 'Página 2', $historyPageExtra.val() )
-				.replace( 'Razão', $justification.val() );
+				.replace( 'PÃ¡gina 1', $target.val() )
+				.replace( 'PÃ¡gina 2', $historyPageExtra.val() )
+				.replace( 'RazÃ£o', $justification.val() );
 		} else if ( data.text !== 'Outro' ) {
 			value = value
-				.replace( /(Nome ou IP|página)/, $target.val() )
-				.replace( 'Razão', $justification.val() );
+				.replace( /(Nome( ou IP)?|pÃ¡gina|Exemplo)/i, $target.val() )
+				.replace( 'RazÃ£o', $justification.val() );
 		} else {
 			value = '== ' + $target.val() + ' ==\n' + $justification.val() + ' \~\~\~~';
 		}
@@ -2852,7 +2854,7 @@ fastb.Prompt.prototype.requests = function ( data ) {
 			summary: fastb.message( 'fastb-summary-newRequest' ),
 			appendtext: '\n' + value,
 			done: function () {
-				fastb.refreshPage( 'edit', data.page + '#' + $target.val() + ( data.text === 'Histórico' ? ' e ' + $historyPageExtra.val() : '' ) );
+				fastb.refreshPage( 'edit', data.page + '#' + $target.val() + ( data.text === 'HistÃ³rico' ? ' e ' + $historyPageExtra.val() : '' ) );
 			}
 		} );
 	};
@@ -2862,9 +2864,9 @@ fastb.Prompt.prototype.requests = function ( data ) {
 		$historyPageExtra = $( '#fastb-requests-historyPageExtra' );
 		$target = $( '#fastb-requests-page' );
 
-		fastb.forceFill( $justification );
-		fastb.forceFill( $historyPageExtra );
 		fastb.forceFill( $target );
+		fastb.forceFill( $historyPageExtra );
+		fastb.forceFill( $justification );
 
 		if ( $( '#fastb-requests *' ).hasClass( 'fastb-fillField' ) ) {
 			return;
@@ -2873,7 +2875,7 @@ fastb.Prompt.prototype.requests = function ( data ) {
 		fastb.notify( fastb.message( 'fastb-notify-getPageContent' ) );
 
 		if ( data.text !== 'Outro' ) {
-			api.getCurrentPageText( data.page + '/Padrão' ).done( function ( value ) {
+			api.getCurrentPageText( data.page + '/PadrÃ£o' ).done( function ( value ) {
 				callback( value );
 			} );
 		} else {
@@ -2894,21 +2896,28 @@ fastb.Prompt.prototype.requests = function ( data ) {
 		content:
 			'<div id="fastb-requests">'
 				+ '<label>'
-					+ fastb.message( 'fastb-dialog-requests-' + ( data.text === 'Bloqueio' ? 'user' : data.text === 'Outro' ? 'subject' : 'page' ) ) + ': <input type="text" id="fastb-requests-page" size="50" />'
+					+ fastb.message( 'fastb-dialog-requests-' + ( $.inArray( data.text, [ 'Incidente', 'Nome imprÃ³prio', 'Vandalismo' ] ) !== -1
+						? 'user'
+						: 'page'
+					) ) + ': <input type="text" id="fastb-requests-page" size="50" />'
 				+ '</label>'
-				+ ( ( data.text === 'Histórico' ) ? '<label>' + fastb.message( 'fastb-dialog-requests-historyPageExtra' ) + ': <input type="text" id="fastb-requests-historyPageExtra" size="50" /></label>' : '' )
-				+ '<label for="fastb-requests-justification">' + fastb.message( 'fastb-dialog-requests-argumentation' ) + ':<br />'
-					+ '<textarea id="fastb-requests-justification" placeholder="' + data.placeholder + ' ' + fastb.message( 'fastb-dialog-requests-dontSign' ) + '"></textarea>'
-				+ '</label>'
+				+ ( ( data.text === 'HistÃ³rico' ) ? '<label>' + fastb.message( 'fastb-dialog-requests-historyPageExtra' ) + ': <input type="text" id="fastb-requests-historyPageExtra" size="50" /></label>' : '' ) + ( data.text !== 'Nome imprÃ³prio'
+					? '<label for="fastb-requests-justification">' + fastb.message( 'fastb-dialog-requests-argumentation' ) + ':<br />'
+						+ '<textarea id="fastb-requests-justification" placeholder="' + data.placeholder + ' ' + fastb.message( 'fastb-dialog-requests-dontSign' ) + '"></textarea>'
+						+ '</label>'
+					: ''
+				)
 			+ '</div>',
 		buttons: buttons
 	} );
 
-	if ( fastb.nsNum !== -1 && ( data.text === 'Bloqueio' && isUserPage && fastb.userName !== mw.config.get( 'wgUserName' )
-		|| $.inArray( data.text, [ 'Bloqueio', 'Outro' ] ) === -1 && mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'Contributions'
-	) ) {
-		$( '#fastb-requests-page' ).val( isUserPage && data.text === 'Bloqueio' ? fastb.userName : pageName );
+	if ( isUserPage && fastb.userName !== mw.config.get( 'wgUserName' ) && $.inArray( data.text, [ 'Incidente', 'Nome imprÃ³prio', 'Vandalismo' ] ) !== -1 ) {
+		targetPage = fastb.userName.replace( /_/g, ' ' );
+	} else if ( fastb.nsNum !== -1 && $.inArray( data.text, [ 'Incidente', 'Nome imprÃ³prio', 'Vandalismo', 'Outro' ] ) === -1 && mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'Contributions' ) {
+		targetPage = pageName;
 	}
+
+	$( '#fastb-requests-page' ).val( targetPage );
 };
 
 /**
@@ -2989,6 +2998,4 @@ if ( mw.util.getParamValue( 'printable' ) !== 'yes' ) {
 	} );
 }
 
-}( mediaWiki, jQuery, window ) );
-
-// [[Categoria:!Código-fonte de scripts|FastButtons/core]]
+}() );
