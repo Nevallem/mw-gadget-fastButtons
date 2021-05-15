@@ -13,19 +13,22 @@
  * @see [[MediaWiki:Gadget-fastbuttons.js/core.js]]
  * @help [[WP:Scripts/FastButtons]]
  */
-/* global mediaWiki, jQuery */
+/* global mw, $ */
 
-( function ( mw, $, window ) {
+( function () {
 'use strict';
 
 mw.messages.set( {
+	'fastb-FastButtons': 'FastButtons',
+	'fastb-showButton': 'exibir',
+	'fastb-hideButton': 'esconder',
 	'fastb-portletButton-title': 'Exibe/Esconde os botões do FastButtons'
 } );
 
 var portletLink = mw.util.addPortletLink(
 	'p-cactions',
 	'#',
-	'FastButtons',
+	mw.message( 'fastb-FastButtons' ) + ' (' + mw.message( 'fastb-' + ( localStorage.getItem( 'fastb-hidden' ) === 'true' ? 'show' : 'hide' ) + 'Button' ) + ')',
 	'ca-fastbHideButton',
 	mw.message( 'fastb-portletButton-title' )
 );
@@ -34,11 +37,13 @@ if ( localStorage.getItem( 'fastb-hidden' ) === 'true' ) {
 	$( portletLink ).click( function( e ) {
 		localStorage.setItem( 'fastb-hidden', false );
 		mw.loader.load( 'ext.gadget.fastButtonsCore' );
+		$( '#ca-fastbHideButton a' ).text(
+			mw.message( 'fastb-FastButtons' ) + ' (' + mw.message( 'fastb-' + ( localStorage.getItem( 'fastb-hidden' ) === 'true' ? 'show' : 'hide' ) + 'Button' ) + ')'
+		);
+		$( this ).off( 'click' );
 	} );
 } else {
 	mw.loader.load( 'ext.gadget.fastButtonsCore' );
 }
 
-}( mediaWiki, jQuery, window ) );
-
-// [[Categoria:!Código-fonte de scripts|FastButtons]]
+}() );
