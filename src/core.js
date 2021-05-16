@@ -40,7 +40,7 @@ function FastButtons() {
 	 * Timestamp of the current version
 	 * @property {string}
 	 */
-	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2021-05-02 09:57:26 (UTC)' /*}}.*/;
+	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2021-05-16 01:25:47 (UTC)' /*}}.*/;
 
 	/**
 	 * List of buttons
@@ -1913,7 +1913,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 			'interface-admin': 'Administrador de interface',
 			'ipblock-exempt': 'Isento de bloqueio de IP',
 			patroller: 'Patrulhador',
-			oversight: [ 'Supervisor', 'Supervisão/Candidaturas' ],
+			oversight: [ 'Supressor', 'Supressão/Candidaturas' ],
 			reviewer: 'Revisor',
 			rollbacker: 'Reversor',
 			sysop: [ 'Administrador', 'Administradores/Pedidos de aprovação' ],
