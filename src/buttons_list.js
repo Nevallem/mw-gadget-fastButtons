@@ -926,10 +926,10 @@ $.extend( fastb.buttons, {
 			page: 'Wikipédia:Pedidos/Restauro'
 		}, {
 			action: 'request',
-			text: 'Supressão',
-			title: 'Requisitar a supressão de uma ou mais edições de uma página.',
-			placeholder: 'Especifique quais edições devem ser suprimidas e o motivo.',
-			page: 'Wikipédia:Pedidos/Supressão'
+			text: 'Ocultação',
+			title: 'Requisitar a ocultação de uma ou mais edições de uma página.',
+			placeholder: 'Especifique quais edições devem ser ocultadas e o motivo.',
+			page: 'Wikipédia:Pedidos/Ocultação'
 		}, {
 			action: 'request',
 			text: 'Nome impróprio',
