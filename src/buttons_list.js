@@ -257,8 +257,8 @@ $.extend( fastb.buttons, {
 	],
 
 	insufficiency: [ {
-			action: 'Artigo insuficiente',
-			templatename: 'Artigo insuficiente',
+			action: 'Insuficiente',
+			templatename: 'Insuficiente',
 			text: 'Candidato a artigo',
 			title: 'Marcar como candidato a artigo',
 			sum: 'Página marcada para [[WP:CA|candidato a artigo]]',
