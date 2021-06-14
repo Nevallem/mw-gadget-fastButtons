@@ -40,7 +40,7 @@ function FastButtons() {
 	 * Timestamp of the current version
 	 * @property {string}
 	 */
-	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2021-05-16 01:25:47 (UTC)' /*}}.*/;
+	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2021-06-13 18:23:35 (UTC)' /*}}.*/;
 
 	/**
 	 * List of buttons
@@ -686,21 +686,21 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 				extraText += '|\{\{subst:DATA}}';
 			break;
 
-			case 'Artigo insuficiente':
+			case 'Insuficiente':
 				extraText += '|2=\~\~\~~';
 			break;
 
 			case 'Candidatura-cabeçalho':
-				if ( valueToLower.indexOf( '\{\{artigo insuficiente' ) === -1 ) {
+				if ( valueToLower.indexOf( '\{\{insuficiente' ) === -1 ) {
 					fastb.dialog( {
 						title: fastb.message( 'fastb-warning' ),
-						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Artigo insuficiente' )
+						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Insuficiente' )
 					} );
 
 					return apiDeferred.promise();
 				}
 
-				value = value.replace( /\{\{artigo insuficiente.*}}/gi, '' );
+				value = value.replace( /\{\{insuficiente.*}}/gi, '' );
 				extraText += ' \~\~\~~|2=\{\{safesubst:#time:j "de" F|+30 days}}';
 			break;
 
