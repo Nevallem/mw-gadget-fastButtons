@@ -2837,13 +2837,13 @@ fastb.Prompt.prototype.requests = function ( data ) {
 
 		if ( data.text === 'Histórico' ) {
 			value = value
-				.replace( 'Página 1', $target.val() )
-				.replace( 'Página 2', $historyPageExtra.val() )
-				.replace( 'Razão', $justification.val() );
+				.replace( /Página 1/i, $target.val() )
+				.replace( /Página 2/i, $historyPageExtra.val() )
+				.replace( /Razão/i, $justification.val() );
 		} else if ( data.text !== 'Outro' ) {
 			value = value
 				.replace( /(Nome( ou IP)?|página|Exemplo)/i, $target.val() )
-				.replace( 'Razão', $justification.val() );
+				.replace( /Razão/i, $justification.val() );
 		} else {
 			value = '== ' + $target.val() + ' ==\n' + $justification.val() + ' \~\~\~~';
 		}
