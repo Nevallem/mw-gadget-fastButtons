@@ -69,7 +69,6 @@ mw.messages.set( {
 	'fastb-dialog-ESR-subject': 'Assunto',
 	'fastb-dialog-ESR-other': 'Outro',
 	'fastb-dialog-ESR-badTranslation': 'Má tradução',
-	'fastb-dialog-ESR-VDA': 'Suspeita de violação dos direitos',
 	'fastb-dialog-ESR-language': 'Idioma (somente a sigla)',
 	'fastb-dialog-ESR-addComent': 'Comentário adicional',
 	'fastb-dialog-ESR-sendWarning': 'Enviar um aviso para o criador da página',
