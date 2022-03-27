@@ -596,7 +596,7 @@ FastButtons.prototype.sendWarning = function ( type /*[, extraArg[, extraArg2[, 
  * @return {jQuery.Deferred}
  */
 FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, value, warn, templateName ) {
-	var fbSummary, esbPlacement, valueToLower,
+	var fbSummary, templatePlacement, valueToLower,
 		appendBelowDesambig = /(\{\{(dablink|distinguir|hatnote|(mini|ver )?desambig(?!-)|não confundir|nota\:|outrosusos|redirect|rellink).+\}\}[\n]*)+/gi,
 		apiDeferred = $.Deferred(),
 		editCallback = function ( e ) {
@@ -668,7 +668,7 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 		if ( fastb.nsNum === 14 ) {
 			value = '\{\{Redirecionamento de categoria|' + extraText[ 0 ] + '|2=' + extraText[ 1 ] + '}}';
 		} else {
-			value = '#REDIRECT [' + '[' + extraText[ 0 ] + ']]';
+			value = '#REDIRECIONAMENTO [' + '[' + extraText[ 0 ] + ']]';
 		}
 
 		fbSummary = fastb.message( 'fastb-summary-redirect', extraText[ 0 ].replace( /_/g, ' ' ), ( ( extraText[ 1 ] !== '' ) ? ' (' + extraText[ 1 ] + ')' : '' ) );
@@ -679,44 +679,12 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 			extraText = extraText ? '|1=' + extraText : '';
 		}
 
-		switch ( code ) {
-			case 'Renomear página':
-			case 'Parcial':
-			case 'Uma-fonte':
-				extraText += '|\{\{subst:DATA}}';
-			break;
+		if ( $.inArray( code, [ 'Renomear página', 'Parcial', 'Uma-fonte'] ) !== -1 ) {
+			extraText += '|\{\{subst:DATA}}';
+		}
 
-			case 'Insuficiente':
-				extraText += '|2=\~\~\~~';
-			break;
-
-			case 'Candidatura-cabeçalho':
-				if ( valueToLower.indexOf( '\{\{insuficiente' ) === -1 ) {
-					fastb.dialog( {
-						title: fastb.message( 'fastb-warning' ),
-						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Insuficiente' )
-					} );
-
-					return apiDeferred.promise();
-				}
-
-				value = value.replace( /\{\{insuficiente.*}}/gi, '' );
-				extraText += ' \~\~\~~|2=\{\{safesubst:#time:j "de" F|+30 days}}';
-			break;
-
-			case 'Eliminação por insuficiência':
-				if ( valueToLower.indexOf( '\{\{candidatura-cabeçalho' ) === -1 ) {
-					fastb.dialog( {
-						title: fastb.message( 'fastb-warning' ),
-						content: fastb.message( 'fastb-insufficiencyTemplateNotFound', 'Candidatura-cabeçalho' )
-					} );
-
-					return apiDeferred.promise();
-				}
-
-				value = value.replace( /\{\{candidatura-cabeçalho.*}}/gi, '' );
-				extraText += '|2=\~\~\~~';
-			break;
+		if ( code === 'Insuficiente' ) {
+			extraText += '|2=\~\~\~~';
 		}
 
 		extraText = '\{\{' + code + extraText + '}}';
@@ -731,9 +699,9 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 			}
 
 			fbSummary = fastb.message( 'fastb-summary-addMessage', code.replace( 'subst:', '' ) );
-		} else if ( code.indexOf( 'Esboço' ) === 0 ) {
-			if ( ( esbPlacement = value.search( /\n+\[\[Categ/ ) ) !== -1 ) {
-				value = value.substring( 0, esbPlacement ) + '\n\n' + extraText + value.substring( esbPlacement );
+		} else if ( code.indexOf( 'Esboço' ) === 0 || code === 'Sem sinopse' ) {
+			if ( ( templatePlacement = value.search( /\n+\[\[Categ/ ) ) !== -1 ) {
+				value = value.substring( 0, templatePlacement ) + '\n\n' + extraText + value.substring( templatePlacement );
 			} else {
 				value += '\n\n' + extraText;
 			}
@@ -1901,6 +1869,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 		groupsMap = {
 			// Local groups
 			autoconfirmed: 'Autoconfirmado',
+			autoextendedconfirmed: 'Autoconfirmado estendido',
 			autoreviewer: 'Autorrevisor',
 			bot: [ 'Robô', 'Robôs/Pedidos_de_aprovação' ],
 			checkuser: [ 'Verificador de contas', 'CheckUser/Candidaturas' ],
@@ -1909,7 +1878,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 			eliminator: [ 'Eliminador', 'Eliminadores/Pedidos de aprovação' ],
 			epcoordinator: 'Coordenador de curso',
 			epinstructor: 'Professor de curso',
-			extendedconfirmed: 'Autoconfirmado estendido',
+			extendedconfirmed: 'Confirmado estendido',
 			'interface-admin': 'Administrador de interface',
 			'ipblock-exempt': 'Isento de bloqueio de IP',
 			patroller: 'Patrulhador',
@@ -1938,6 +1907,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 			staff: 'Funcionário da Wikimédia',
 			steward: 'Steward',
 			sysadmin: 'Administrador do sistema',
+			'vrt-permissions': 'Agente de permisões VRT',
 			'wmf-ops-monitoring': 'Monitor da operações da WMF',
 			'wmf-researcher': 'Investigador da WMF'
 		};
@@ -1976,7 +1946,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 					return '<a href="' + mw.util.getUrl( 'Wikipédia:' + groupsMap[ el ][ 1 ] + '/' + user.name ) + '">' + groupsMap[ el ][ 0 ] + '</a>';
 				}
 
-				return groupsMap[ el ];
+				return groupsMap[ el ] || el;
 			} ).sort( function ( x, y ) { // Sort the groups in A-Z
 				return ( $( y ).length ? $( y ).text() : y ) < ( $( x ).length ? $( x ).text() : x );
 			} );
@@ -2514,14 +2484,12 @@ fastb.Prompt.prototype.ESR = function () {
 		$subjectSelect = $( '#fastb-ESR-subject-select' );
 
 		if ( fastb.forceFill( $( '#fastb-ESR-matrad-language' ), $( '#fastb-ESR-matrad-language' ).is( ':visible' ) && $( '#fastb-ESR-matrad-language' ).val() === '' )
-			&& fastb.forceFill( $( '#fastb-ESR-justification-field' ), $subjectSelect.is( ':visible' ) && $( '#fastb-ESR-justification-field' ).val() === '' && !$( '#fastb-ESR-VDA' ).prop( 'checked' ) )
+			&& fastb.forceFill( $( '#fastb-ESR-justification-field' ), $subjectSelect.is( ':visible' ) && $( '#fastb-ESR-justification-field' ).val() === '' )
 		) {
 			if ( fastb.nsNum === 6 ) {
 				templateCode = 'subst:ESR-arquivo|' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
 			} else if ( $( '#fastb-ESR-matrad' ).prop( 'checked' ) ) {
 				templateCode = 'subst:ESR-matrad|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~|língua=' + $( '#fastb-ESR-matrad-language' ).val().toLowerCase();
-			} else if ( $( '#fastb-ESR-VDA' ).prop( 'checked' ) ) {
-				templateCode = 'subst:ESR-VDA|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
 			} else if ( !!$subjectSelect.val().split( ';' )[ 1 ] ) {
 				templateCode = 'subst:' + $subjectSelect.val().split( ';' )[ 1 ] + '|' + '\~\~\~~' + '|' + $( '#fastb-ESR-justification-field' ).val();
 			} else {
@@ -2551,10 +2519,7 @@ fastb.Prompt.prototype.ESR = function () {
 		height: 'auto',
 		content: '<div id="fastb-ESR">'
 				+ '<label for="fastb-ESR-matrad" class="fastb-labelInline">'
-					+ '<input id="fastb-ESR-matrad" type="checkbox" />' + fastb.message( 'fastb-dialog-ESR-badTranslation' )
-				+ '</label>'
-				+ '<label for="fastb-ESR-VDA" class="fastb-labelInline">'
-					+ '<input id="fastb-ESR-VDA" type="checkbox" />' + fastb.message( 'fastb-dialog-ESR-VDA' )
+					+ '<input id="fastb-ESR-matrad" type="checkbox" /> ' + fastb.message( 'fastb-dialog-ESR-badTranslation' )
 				+ '</label>'
 				+ '<label for="fastb-ESR-sendWarning">'
 					+ '<input type="checkbox" id="fastb-ESR-sendWarning" /> ' + fastb.message( 'fastb-dialog-ESR-sendWarning' )
@@ -2578,10 +2543,8 @@ fastb.Prompt.prototype.ESR = function () {
 	if ( fastb.nsNum === 6 ) {
 		$( '#fastb-ESR-matrad' ).prop( 'disabled', true );
 		$( '#fastb-ESR-subject-select' ).prop( 'disabled', true );
-		$( '#fastb-ESR-VDA' ).prop( 'disabled', true );
 		$( '#fastb-ESR label[for="fastb-ESR-matrad"]' ).css( 'color', 'gray' );
 		$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).css( 'color', 'gray' );
-		$( '#fastb-ESR label[for="fastb-ESR-VDA"]' ).css( 'color', 'gray' );
 	}
 
 	$( '#fastb-ESR label[for="fastb-ESR-matrad-language"]' ).hide();
@@ -2611,12 +2574,6 @@ fastb.Prompt.prototype.ESR = function () {
 			$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).hide();
 			$( '#fastb-ESR-justification-field-justify' ).text( fastb.message( 'fastb-dialog-ESR-addComent' ) );
 			$( '#fastb-ESR-justification-field' ).val( '' );
-
-			if ( $( '#fastb-ESR-VDA' ).prop( 'checked' ) ) {
-				$( '#fastb-ESR-VDA' ).prop( 'checked', false );
-				$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).css( 'color', 'black' );
-				$( '#fastb-ESR-subject-select' ).prop( 'disabled', false );
-			}
 		} else {
 			$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).fadeIn( 'slow' );
 			$( '#fastb-ESR label[for="fastb-ESR-matrad-language"]' ).hide();
@@ -2625,24 +2582,6 @@ fastb.Prompt.prototype.ESR = function () {
 
 		$( '#fastb-ESR-matrad-language' ).removeClass( 'fastb-fillField' );
 		$( '#fastb-ESR-justification-field' ).removeClass( 'fastb-fillField' );
-	} );
-
-	$( '#fastb-ESR-VDA' ).click( function () {
-		if ( $( this ).prop( 'checked' ) ) {
-			$( '#fastb-ESR-justification-field-justify' ).text( fastb.message( 'fastb-dialog-ESR-addComent' ) );
-			$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).css( 'color', 'gray' );
-			$( '#fastb-ESR-subject-select' ).prop( 'disabled', true );
-
-			if ( $( '#fastb-ESR-matrad' ).prop( 'checked' ) ) {
-				$( '#fastb-ESR-matrad' ).prop( 'checked', false );
-				$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).fadeIn( 'slow' );
-				$( '#fastb-ESR label[for="fastb-ESR-matrad-language"]' ).hide();
-			}
-		} else {
-			$( '#fastb-ESR-justification-field-justify' ).text( fastb.message( 'fastb-dialog-ESR-reason' ) );
-			$( '#fastb-ESR label[for="fastb-ESR-subject"]' ).css( 'color', 'black' );
-			$( '#fastb-ESR-subject-select' ).prop( 'disabled', false );
-		}
 	} );
 };
 
