@@ -133,7 +133,7 @@ mw.messages.set( {
 	// User
 	'fastb-user-anonFirstEdit': 'Primeira edição',
 	'fastb-user-registryDate': 'Data de registro',
-	'fastb-user-userFirstEdit': 'A data em questão se refere, na realidade, à primeira edição do usuário, pois não foi possível obter a data de registro original, por se tratar de uma conta muito antiga',
+	'fastb-user-userFirstEdit': 'A data em questão se refere à primeira edição do usuário, pois por se tratar de uma conta muito antiga não foi possível obter a data de registro original.',
 	'fastb-user-unkownRegisterDate': 'Não foi possível encontrar a data de registro do editor.',
 	'fastb-user-undefined': 'indefinido',
 	'fastb-user-priorTo': 'antes de',
@@ -183,7 +183,6 @@ mw.messages.set( {
 } );
 
 var nsNum = mw.config.get( 'wgNamespaceNumber' ),
-	userGroups = mw.config.get( 'wgUserGroups' ),
 	userName =  ( mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'Contributions' )
 		? mw.config.get( 'wgTitle' ).split( '/' )[ 0 ]
 		: window.decodeURI( mw.util.getUrl().split( '/' )[ 3 ] || mw.util.getParamValue( 'target' ) );
@@ -261,30 +260,10 @@ $.extend( fastb.buttons, {
 			templatename: 'Insuficiente',
 			text: 'Candidato a artigo',
 			title: 'Marcar como candidato a artigo',
-			sum: 'Página marcada para [[WP:CA|candidato a artigo]]',
+			sum: 'Página marcada para [[WP:CAA|candidato a artigo]]',
 			prompt: 'Justifique o porquê desta página<br />obedecer às regras de <code>[[<a href="https://pt.wikipedia.org/wiki/Wikip%C3%A9dia:Candidatos_a_artigo">WP:CA</a>]]</code>.',
 			label: 'Justificativa[required]',
 			disable: nsNum !== 0
-		}, {
-			action: 'Candidatura-cabeçalho',
-			templatename: 'Candidatura-cabeçalho',
-			text: 'Enviar para manutenção',
-			title: 'Enviar o artigo para manutenção, para que seus problemas sejam corrigidos',
-			sum: 'Artigo marcado para manutenção, conforme [[WP:CA]]',
-			prompt: 'Justifique o motivo para levar a página à manutenção',
-			label: 'Justificativa[required]',
-			disable: nsNum !== 0
-		}, {
-			action: 'Eliminação por insuficiência',
-			templatename: 'Eliminação por insuficiência',
-			text: 'Eliminação por insuficiência',
-			title: 'Atestar o artigo como insuficiente, após decorrido o prazo de manutenção',
-			sum: 'Artigo marcado para eliminação por insuficiência',
-			prompt: 'Justifique o motivo da eliminação',
-			label: 'Justificativa[required]',
-			disable: nsNum !== 0 || ( $.inArray( 'sysop', userGroups ) !== -1
-				&& $.inArray( 'eliminator', userGroups ) !== -1
-			)
 		}
 	],
 
@@ -433,7 +412,7 @@ $.extend( fastb.buttons, {
 			action: 'subst:m-fontes',
 			templatename: 'Mais fontes',
 			text: 'Mais fontes',
-			title: 'Página cita fontes fiáveis, mas não cobre todo o texto',
+			title: 'Página cita fontes confiáveis, mas não cobre todo o texto',
 			sum: 'Página marcada que carece de mais fontes'
 		}, {
 			action: 'subst:m-fontes-bpv',
@@ -487,6 +466,12 @@ $.extend( fastb.buttons, {
 			label: 'Sugestão',
 			sum: 'Página marcada como sem infocaixa'
 		}, {
+			action: 'Sem sinopse',
+			templatename: 'Sem sinopse',
+			text: 'Sem sinopse',
+			title: 'Página não possui nenhuma sinopse',
+			sum: 'Página marcada como sem sinopse'
+		}, {
 			action: 'Parcial',
 			templatename: 'Parcial',
 			text: 'Parcial',
@@ -519,7 +504,7 @@ $.extend( fastb.buttons, {
 			prompt: 'Qual o tipo da perspectiva?',
 			label: 'Digite o número correspondente:<br />1 = Lusofonia<br />2 = Brasil<br />3 = Portugal<br />Ou deixe em branco para utilizar a predefinição genérica[optional]'
 		}, {
-			action: 'Má tradução',
+			action: 'subst:m-tradução',
 			templatename: 'Má tradução',
 			text: 'Má tradução',
 			title: 'A conteúdo da página está possivelmente mal traduzido',
@@ -543,6 +528,12 @@ $.extend( fastb.buttons, {
 			title: 'A página não possui uma seção introdutória ou está malformatada',
 			sum: 'Página marcada como má introdução'
 		}, {
+			action: 'subst:sin',
+			templatename: 'Sinopse',
+			text: 'Sinopse',
+			title: 'A sinopse do artigo é extensa demais ou muito detalhada',
+			sum: 'Página marcada como sinopse extensa'
+		}, {
 			action: 'Em manutenção',
 			templatename: 'Em manutenção',
 			text: 'Em manutenção',
@@ -555,7 +546,7 @@ $.extend( fastb.buttons, {
 			title: 'Marcar a página como em processo de construção',
 			sum: 'Página marcada como em contrução'
 		}, {
-			action: 'Em tradução',
+			action: 'subst:e-tradução',
 			templatename: 'Em tradução',
 			text: 'Em tradução',
 			title: 'Marcar a página como em processo de tradução',
@@ -574,12 +565,6 @@ $.extend( fastb.buttons, {
 			sum: 'Página marcada como evento atual',
 			prompt: 'Especifique o evento, preferencialmente (<a href="https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Evento_atual#Uso">temas possíveis<a>).',
 			label: 'Tema do evento'
-		}, {
-			action: 'subst:m-recente',
-			templatename: 'Morte recente',
-			text: 'Morte recente',
-			title: 'Artigo sobre uma pessoa que morreu recentemente',
-			sum: 'Página marcada como morte recente'
 		}, {
 			action: fastb.openPrompt.bind( fastb, 'merging' ),
 			text: 'Fusão',
@@ -673,8 +658,14 @@ $.extend( fastb.buttons, {
 		}, {
 			action: 'subst:aviso2',
 			text: 'Av2',
-			title: 'Aviso sobre vandalismo',
-			prompt: 'Qual página foi vandalizada?',
+			title: 'Segundo aviso sobre erro em artigo',
+			prompt: 'Segundo aviso sobre qual artigo?',
+			label: 'Página'
+		}, {
+			action: 'subst:aviso3',
+			text: 'Av3',
+			title: 'Terceiro aviso sobre erro em artigo',
+			prompt: 'Terceiro aviso sobre qual artigo?',
 			label: 'Página'
 		}, {
 			action: 'subst:aviso-vandalismo',
@@ -851,6 +842,14 @@ $.extend( fastb.buttons, {
 			desc: 'Pesquisar o título desta página no Google Acadêmico',
 			url: '//scholar.google.com/scholar?q='
 		}, {
+			text: 'Google Brasil',
+			desc: 'Pesquisar o título desta página no Google Brasil',
+			url: '//www.google.com/search?cr=countryBR&q='
+		}, {
+			text: 'Google Portugal',
+			desc: 'Pesquisar o título desta página no Google Portugal',
+			url: '//www.google.com/search?cr=countryPT&q='
+		}, {
 			text: 'Bing',
 			desc: 'Pesquisar o título desta página no Bing',
 			url: '//www.bing.com/search?q='
@@ -1026,79 +1025,82 @@ $.extend( fastb.buttons, {
  * @property {Object[]} defaultJustifications_ESR
  */
 fastb.defaultJustificationsESR = {
-	'Arte': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Arte': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), blogues (como Blogspot, Blogger, WordPress, etc.)'
+		+ ' e redes sociais (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 
 	'Banda': [
-		'Artigo sobre banda/grupo musical sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do'
+		'Artigo sobre banda/grupo musical sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do'
 			+ ' texto e atestem a notoriedade do artista ou de sua obra. Ver [[WP:V|princípio da verificabilidade]] e'
-			+ ' [[WP:CDN|critérios de notoriedade]] (e o [[Wikipédia:Critérios de notoriedade/Música|critério específico para música]]). Páginas'
-			+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+			+ ' [[WP:CDN|critérios de notoriedade]] (e o [[Wikipédia:Critérios de notoriedade/Música|critério específico para música]]).'
+			+ ' Páginas pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), blogues (como Blogspot, Blogger,'
+			+ ' WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 		'ESR-banda'
 	],
 
-	'Cantores, álbuns e músicas':'Artigo relacionado à música sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do'
-		+ ' texto e atestem a notoriedade do artista ou de sua obra. Ver [[WP:V|princípio da verificabilidade]] e'
-		+ ' [[WP:CDN|critérios de notoriedade]] (e o [[Wikipédia:Critérios de notoriedade/Música|critério específico para música]]). Páginas'
-		+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+	'Cantores, álbuns e músicas' : 'Artigo relacionado à música sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem'
+		+ ' as afirmações do texto e atestem a notoriedade do artista ou de sua obra. Ver [[WP:V|princípio da verificabilidade]] e'
+		+ ' [[WP:CDN|critérios de notoriedade]] (e o [[Wikipédia:Critérios de notoriedade/Música|critério específico para música]]).'
+		+ ' Páginas pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), blogues (como Blogspot, Blogger, WordPress, etc.)'
+		+ ' e redes sociais (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 
-	'Ciência': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Ciência': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
-	'Ciências sociais': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Ciências sociais': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
-	'Educação': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Educação': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 		+ ' [[Wikipédia:Critérios de notoriedade/Educação|critério específico para educação]]). Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
-	'Entretenimento': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Entretenimento': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), blogues (como Blogspot, Blogger, WordPress, etc.)'
+		+ ' e redes sociais (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 
-	'Esporte/desporto': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Esporte/desporto': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
-		+ ' [[Wikipédia:Critérios de notoriedade/Desporto|critério específico para desporto]]. Páginas pessoais, sites'
-		+ ' de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' [[Wikipédia:Critérios de notoriedade/Desporto|critério específico para desporto]]). Páginas pessoais, sites'
+		+ ' de fãs, sites colaborativos (como Zerozero, oGol, etc.), blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais'
+		+ ' (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 
-	'Geografia': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
-		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
-		+ ' [[Wikipédia:Critérios de notoriedade/Geografia|critério específico para geografia]]). Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+	'História e sociedade': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto'
+		+ ' e atestem notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
-	'História e sociedade': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Medicina': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
-	'Medicina': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
+	'Países': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
-
-	'Países': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
-		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.',
 
 	'Pessoas': [
-		'Biografia sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem a'
+		'Biografia sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem a'
 			+ ' notoriedade do biografado. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 			+ ' [[Wikipédia:Critérios de notoriedade/Biografias|critério específico para biografias]]). Páginas '
-			+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são considerados fontes fiáveis.',
+			+ ' pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), blogues (como Blogspot, Blogger, WordPress, etc.)'
+			+ ' e redes sociais (como Facebook, Instagram, Twitter, etc.) não são considerados fontes confiáveis.',
 		'ESR-bio'
 	],
 
-	'Política': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem '
+	'Política': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem '
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 		+ ' [[Wikipédia:Critérios de notoriedade/Política|critério específico para política]]). Páginas'
-		+ ' pessoais, fóruns, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.',
-
-	'Rádio e televisão': 'Artigo sem [[WP:FF|fontes fiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
-		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
-		+ ' [[Wikipédia:Critérios de notoriedade/Cinema, rádio e televisão|critério específico para rádio e televisão]]). Páginas'
-		+ ' pessoais, sites de fãs, blogues e redes sociais (como Facebook, Twitter, etc.) não são fontes fiáveis.'
+		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' não são fontes confiáveis.'
 };
 
 }( fastButtons ) );
