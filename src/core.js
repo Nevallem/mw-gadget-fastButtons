@@ -40,7 +40,7 @@ function FastButtons() {
 	 * Timestamp of the current version
 	 * @property {string}
 	 */
-	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2021-06-13 18:23:35 (UTC)' /*}}.*/;
+	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2022-09-16 00:42:13 (UTC)' /*}}.*/;
 
 	/**
 	 * List of buttons
@@ -787,6 +787,8 @@ FastButtons.prototype.init = function () {
 
 	if ( mw.config.get( 'skin' ) === 'modern' ) {
 		$( '#contentSub' ).before( fastb.$menu ).before( fastb.$submenu );
+	} else if ( mw.config.get( 'skin' ) === 'vector-2022' ) {
+		$( '#bodyContent' ).before( fastb.$menu ).before( fastb.$submenu );
 	} else {
 		$( 'h1' ).first().after( fastb.$submenu ).after( fastb.$menu );
 	}
@@ -1135,7 +1137,7 @@ $.extend( fastb, {
 
 		$stubInput = $( '<input type="text" id="fastb-esb-input" size="24" />' )
 			.autocomplete( {
-				source: function ( request, response ) {
+				source: function ( _request, response ) {
 					fastb.callAPI( 'esb' ).done( function ( data ) {
 						response( $.map( data.query.allpages, function ( item ) {
 							return item.title.replace( /^Predefinição:Esboço-/gi, '' );
@@ -1330,7 +1332,7 @@ fastb.ProcessAPI = function ( typeRequest ) {
 			list: 'recentchanges',
 			rctype: 'edit',
 			rcnamespace: '0',
-			rcshow: 'anon',
+			rcshow: '!autopatrolled',
 			rcprop: 'user|comment|title|sizes'
 		},
 
@@ -1529,7 +1531,7 @@ fastb.ProcessAPI.prototype.recentEdits = function ( query, code ) {
 					&& scores.damaging.prediction && !scores.goodfaith.prediction;
 			} );
 
-			$.each( list, function ( i, rev ) {
+			$.each( list, function ( _i, rev ) {
 				var scores = data[ rev.revid ];
 
 				rev.damagingScore = scores.damaging.probability[ 'true' ];
@@ -1882,7 +1884,7 @@ fastb.ProcessAPI.prototype.userInfo = {
 			'interface-admin': 'Administrador de interface',
 			'ipblock-exempt': 'Isento de bloqueio de IP',
 			patroller: 'Patrulhador',
-			oversight: [ 'Supressor', 'Supressão/Candidaturas' ],
+			suppress: [ 'Supressor', 'Supressão/Candidaturas' ],
 			reviewer: 'Revisor',
 			rollbacker: 'Reversor',
 			sysop: [ 'Administrador', 'Administradores/Pedidos de aprovação' ],
@@ -2487,13 +2489,13 @@ fastb.Prompt.prototype.ESR = function () {
 			&& fastb.forceFill( $( '#fastb-ESR-justification-field' ), $subjectSelect.is( ':visible' ) && $( '#fastb-ESR-justification-field' ).val() === '' )
 		) {
 			if ( fastb.nsNum === 6 ) {
-				templateCode = 'subst:ESR-arquivo|' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
+				templateCode = 'subst:ESR-arquivo|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~';
 			} else if ( $( '#fastb-ESR-matrad' ).prop( 'checked' ) ) {
 				templateCode = 'subst:ESR-matrad|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~|língua=' + $( '#fastb-ESR-matrad-language' ).val().toLowerCase();
 			} else if ( !!$subjectSelect.val().split( ';' )[ 1 ] ) {
-				templateCode = 'subst:' + $subjectSelect.val().split( ';' )[ 1 ] + '|' + '\~\~\~~' + '|' + $( '#fastb-ESR-justification-field' ).val();
+				templateCode = 'subst:' + $subjectSelect.val().split( ';' )[ 1 ] + '|1=' + '\~\~\~~' + '|2=' + $( '#fastb-ESR-justification-field' ).val();
 			} else {
-				templateCode = 'subst:ESR|' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~'
+				templateCode = 'subst:ESR|1=' + $( '#fastb-ESR-justification-field' ).val() + ' \~\~\~~'
 					+ ( $subjectSelect.val() !== fastb.message( 'fastb-dialog-ESR-other' ) ? '|assunto=' + $subjectSelect.val() : '' );
 			}
 
