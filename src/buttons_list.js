@@ -408,11 +408,17 @@ $.extend( fastb.buttons, {
 			title: 'Existem fontes no final da página, mas não são citadas no corpo do artigo',
 			sum: 'Página marcada como sem notas'
 		}, {
-			action: 'subst:m-fontes',
-			templatename: 'Mais fontes',
-			text: 'Mais fontes',
+			action: 'subst:s-notas-bpv',
+			templatename: 'Sem notas BPV',
+			text: 'Sem notas BPV',
+			title: 'Existem fontes no final da página sobre uma biografia de pessoa viva, mas não são citadas no corpo do artigo',
+			sum: 'Página marcada como [[WP:BPV|biografia de pessoa viva]] sem notas'
+		}, {
+			action: 'subst:m-notas',
+			templatename: 'Mais notas',
+			text: 'Mais notas',
 			title: 'Página cita fontes confiáveis, mas não cobre todo o texto',
-			sum: 'Página marcada que carece de mais fontes'
+			sum: 'Página marcada que carece de mais notas'
 		}, {
 			action: 'subst:m-fontes-bpv',
 			templatename: 'Mais fontes-bpv',
@@ -507,7 +513,9 @@ $.extend( fastb.buttons, {
 			templatename: 'Má tradução',
 			text: 'Má tradução',
 			title: 'A conteúdo da página está possivelmente mal traduzido',
-			sum: 'Página marcada como má tradução'
+			sum: 'Página marcada como má tradução',
+			prompt: 'Especifique a página original de onde foi mal traduzida, seguindo o exemplo \'consulte [[:XX:NOME DA PÁGINA]] (IDIOMA ORIGINAL)\'.',
+			label: 'Página original'
 		}, {
 			action: 'Corrigir',
 			templatename: 'publicidade',
@@ -563,6 +571,14 @@ $.extend( fastb.buttons, {
 			title: 'Artigo sobre um evento atual',
 			sum: 'Página marcada como evento atual',
 			prompt: 'Especifique o evento, preferencialmente (<a href="https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Evento_atual#Uso">temas possíveis<a>).',
+			label: 'Tema do evento'
+		}, {
+			action: 'subst:ev-futuro',
+			templatename: 'Evento futuro',
+			text: 'Evento futuro',
+			title: 'Artigo sobre um evento futuro',
+			sum: 'Página marcada como evento futuro',
+			prompt: 'Especifique o evento, preferencialmente (<a href="https://pt.wikipedia.org/wiki/Predefini%C3%A7%C3%A3o:Evento_futuro#Uso">temas possíveis<a>).',
 			label: 'Tema do evento'
 		}, {
 			action: fastb.openPrompt.bind( fastb, 'merging' ),
@@ -621,13 +637,7 @@ $.extend( fastb.buttons, {
 			text: 'Av-ER',
 			title: 'Aviso sobre eliminação rápida',
 			prompt: 'Qual página foi proposta para eliminação?',
-			label: 'Página|2=Regra de eliminação'
-		}, {
-			action: 'subst:av-bv-ER',
-			text: 'Av-BV-ER',
-			title: 'Aviso sobre eliminação rápida + boas-vindas',
-			prompt: 'Qual página foi proposta para eliminação?',
-			label: 'Página|2=Regra de eliminação'
+			label: 'Página|2=Regra de eliminação|3=Observação (opcional)[optional]'
 		}, {
 			action: 'subst:aviso-ESR',
 			text: 'Av-ESR',
@@ -703,12 +713,6 @@ $.extend( fastb.buttons, {
 			prompt: 'Qual o nível do aviso (1 para primeiro, 2 para segundo, 3 para terceiro ou b para notificação de bloqueio)? E em que página foram feitos testes?',
 			label: 'Nível|2=Página'
 		}, {
-			action: 'subst:av-data',
-			text: 'Av-data',
-			title: 'Não insira seu nome e data de nascimento em páginas de datas',
-			prompt: 'Em que página de data foram inseridos o nome e a data de nascimento?',
-			label: 'Página'
-		}, {
 			action: 'subst:av-interwiki',
 			text: 'Av-interwikis',
 			title: 'Faltou adicionar os interwikis à página',
@@ -770,7 +774,7 @@ $.extend( fastb.buttons, {
 			action: 'subst:não remova',
 			text: 'Não remova',
 			title: 'Não remova marcações de eliminação das páginas',
-			prompt: 'Qual página em que a marcação de eliminação foi removida? Se desejar, pode especificar o tipo de marcação (er para eliminação rápida, esr para eliminação rápida ou ec para eliminação por consenso).',
+			prompt: 'Qual página em que a marcação de eliminação foi removida? Se desejar, pode especificar o tipo de marcação (er para eliminação rápida, esr para eliminação rápida, caa para candidatura a artigo ou ec para eliminação por consenso).',
 			label: 'Página|2=Tipo de marcação[optional]',
 			sum: 'Aviso sobre remoção de marcações de eliminação das páginas'
 		}, {
@@ -780,12 +784,30 @@ $.extend( fastb.buttons, {
 			prompt: 'Qual autobiografia foi criada?',
 			label: 'Página'
 		}, {
-			action: 'subst:cite fonte',
+			action: 'subst:aviso-cite fonte',
 			text: 'Citar fontes',
 			title: 'Faltou citar fontes à página',
-			prompt: 'Qual foi a página?',
+			prompt: 'Qual foi a página? E qual o nível do aviso (1 para primeiro, 2 para segundo ou 3 para terceiro)? ',
+			label: 'Página|2=Nível'
+		}, {
+			action: 'subst:aviso-fontes não confiáveis',
+			text: 'Fontes não confiáveis',
+			title: 'Não use fontes não confiáveis',
+			prompt: 'Em qual página foram usadas fontes não confiáveis?',
 			label: 'Página'
 		}, {
+			action: 'subst:aviso-IMDb',
+			text: 'IMDb',
+			title: 'Não cite o IMDb como fonte',
+			prompt: 'Em qual página o IMDb foi citado como fonte?',
+			label: 'Página'
+		}, {
+			action: 'subst:aviso-blogue',
+			text: 'Blogue',
+			title: 'Não use a Wikipédia como um blogue ou uma plataforma de divulgação',
+			prompt: 'Qual foi a página?',
+			label: 'Página'
+		}, {	
 			action: 'subst:Av-npi',
 			text: 'Pesquisa inédita',
 			title: 'Material não verificável por fontes.',
@@ -796,6 +818,12 @@ $.extend( fastb.buttons, {
 			text: 'Aviso-GE',
 			title: 'A página foi protegida devido à guerra de edições',
 			prompt: 'Qual página foi protegida?',
+			label: 'Página'
+		}, {
+			action: 'subst:aviso-pdi',
+			text: 'Parcialidade',
+			title: 'Não faça edições parciais',
+			prompt: 'Qual foi a página?',
 			label: 'Página'
 		}, {
 			action: 'subst:bloqueado',
@@ -1046,18 +1074,18 @@ fastb.defaultJustificationsESR = {
 
 	'Ciência': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Ciências sociais': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Educação': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 		+ ' [[Wikipédia:Critérios de notoriedade/Educação|critério específico para educação]]). Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Entretenimento': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
@@ -1068,22 +1096,22 @@ fastb.defaultJustificationsESR = {
 	'Esporte/desporto': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 		+ ' [[Wikipédia:Critérios de notoriedade/Desporto|critério específico para desporto]]). Páginas pessoais, sites'
-		+ ' de fãs, sites colaborativos (como Zerozero, oGol, etc.), blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais'
+		+ ' de fãs, sites colaborativos (como Rede Zerozero, IMDb, etc.), blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais'
 		+ ' (como Facebook, Instagram, Twitter, etc.) não são fontes confiáveis.',
 
 	'História e sociedade': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto'
 		+ ' e atestem notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Medicina': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Países': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem'
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]]. Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.',
 
 	'Pessoas': [
@@ -1098,7 +1126,7 @@ fastb.defaultJustificationsESR = {
 	'Política': 'Artigo sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem '
 		+ ' notoriedade. Ver [[WP:V|princípio da verificabilidade]] e [[WP:CDN|critérios de notoriedade]] (e o'
 		+ ' [[Wikipédia:Critérios de notoriedade/Política|critério específico para política]]). Páginas'
-		+ ' pessoais, fóruns, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
+		+ ' pessoais, fóruns de discussão, blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 		+ ' não são fontes confiáveis.'
 };
 
