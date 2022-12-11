@@ -40,7 +40,7 @@ function FastButtons() {
 	 * Timestamp of the current version
 	 * @property {string}
 	 */
-	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2022-09-16 00:42:13 (UTC)' /*}}.*/;
+	this.version = /*{{subst:Autossubstituição/Estampa com data e hora|js|.*/ '2022-12-11 00:28:44 (UTC)' /*}}.*/;
 
 	/**
 	 * List of buttons
@@ -679,12 +679,8 @@ FastButtons.prototype.manipulateTextPage = function ( code, extraText, sum, valu
 			extraText = extraText ? '|1=' + extraText : '';
 		}
 
-		if ( $.inArray( code, [ 'Renomear página', 'Parcial', 'Uma-fonte'] ) !== -1 ) {
+		if ( $.inArray( code, [ 'Renomear página', 'Parcial'] ) !== -1 ) {
 			extraText += '|\{\{subst:DATA}}';
-		}
-
-		if ( code === 'Insuficiente' ) {
-			extraText += '|2=\~\~\~~';
 		}
 
 		extraText = '\{\{' + code + extraText + '}}';
